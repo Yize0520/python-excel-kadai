@@ -1,0 +1,82 @@
+import openpyxl
+from openpyxl.styles import Alignment
+
+# 新しいワークブックを作成
+wb = openpyxl.Workbook()
+ws = wb.active
+ws.title = "請求書"
+
+# タイトルを挿入
+title_cell = ws['C2']
+title_cell.value = "請求書"
+title_cell.alignment = Alignment(horizontal="center")
+title_cell.font = openpyxl.styles.Font(size=16, bold=True)
+
+# 請求書情報の挿入
+invoice_no = "INV20230001"
+date = "2023/0408"
+company_name = "株式会社ABC"
+postal_code = "〒101-0022"
+address = "東京都千代田区神田練堀町300"
+phone = "03-1234-5678"
+fax = "03-2345-6789"
+contact_person = "鈴木一郎"
+
+ws['E2'] = "No：" + invoice_no
+ws['E2'].alignment = Alignment(horizontal="right")
+ws['E3'] = "日付：" + date
+ws['E3'].alignment = Alignment(horizontal="right")
+ws['B4'] =  company_name + " 御中"
+ws['B5'] = "〒" + postal_code
+ws['B6'] =  address
+ws['B7'] = "TES：" + phone
+ws['B8'] = "FAX：" + fax
+ws['B9'] = "担当者名：" + contact_person + " 様"
+
+# 商品情報の挿入
+ws['B12'] = "商品名"
+ws['C12'] = "数量"
+ws['D12'] = "単価"
+ws['E12'] = "金額"
+
+products = [
+    {"name": "商品A", "quantity": 2, "unit_price": 10000},
+    {"name": "商品B", "quantity": 1, "unit_price": 15000}
+]
+
+row = 13
+subtotal = 0
+
+for product in products:
+    ws[f'B{row}'] = product["name"]
+    ws[f'C{row}'] = product["quantity"]
+    ws[f'D{row}'] = product["unit_price"]
+    ws[f'E{row}'] = product["quantity"] * product["unit_price"]
+    subtotal += product["quantity"] * product["unit_price"]
+    row += 1
+
+# 小計、消費税、税込合計の計算と挿入
+tax_rate = 0.10  # 10%の消費税
+tax = subtotal * tax_rate
+total = subtotal + tax
+
+row += 1
+ws[f'B{row}'] = "小計"
+ws[f'E{row}'] = subtotal
+row += 1
+ws[f'B{row}'] = "消費税（10%）"
+ws[f'E{row}'] = tax
+row += 1
+ws[f'B{row}'] = "税込合計"
+ws[f'E{row}'] = total
+
+# 列幅の調整
+column_widths = [6, 15, 10, 10, 15, 10, 6]
+for i, width in enumerate(column_widths, start=1):
+    ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = width
+
+# ファイル保存
+file_name = "請求書.xlsx"
+
+wb.save(file_name)
+print(f"{file_name} が生成されました。")
