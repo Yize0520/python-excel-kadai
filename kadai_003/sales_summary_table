@@ -1,1 +1,40 @@
+import pandas as pd
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill
 
+# ファイルの読み込み
+df_2022 = pd.read_excel('2022_年間売上表.xlsx', sheet_name='Sheet1')
+df_2023 = pd.read_excel('2023_年間売上表.xlsx', sheet_name='Sheet1')
+
+# データを連結
+combined_df = pd.concat([df_2022, df_2023], ignore_index=True)
+
+# データを「商品」「売上年」ごとにグループ化
+grouped_df = combined_df.groupby(['商品', '売上年'])['金額（千円）'].sum().reset_index()
+
+# Excelファイルにデータを書き出し
+output_file = '売上集計表.xlsx'
+
+# Excelファイル作成
+workbook = Workbook()
+worksheet = workbook.active
+
+# ヘッダー部分のスタイルを設定
+header_fill = PatternFill(start_color='F2F2F2', end_color='F2F2F2', fill_type='solid')
+for col_num, cell in enumerate(worksheet[1], 1):
+    cell.fill = header_fill
+
+# ヘッダー行を書き込む
+header = grouped_df.columns
+for col_num, header_text in enumerate(header, 1):
+    worksheet.cell(row=1, column=col_num, value=header_text)
+
+# データを書き込む
+for row_num, row_data in enumerate(grouped_df.values, 2):
+    for col_num, cell_value in enumerate(row_data, 1):
+        worksheet.cell(row=row_num, column=col_num, value=cell_value)
+
+# ファイル保存
+workbook.save(output_file)
+
+print(f'{output_file} にデータを書き出しました。')
