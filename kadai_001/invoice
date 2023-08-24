@@ -7,7 +7,7 @@ ws = wb.active
 ws.title = "請求書"
 
 # タイトルを挿入
-title_cell = ws['C2']
+title_cell = ws['B2']
 title_cell.value = "請求書"
 title_cell.alignment = Alignment(horizontal="center")
 title_cell.font = openpyxl.styles.Font(size=16, bold=True)
@@ -22,29 +22,31 @@ phone = "03-1234-5678"
 fax = "03-2345-6789"
 contact_person = "鈴木一郎"
 
-ws['E2'] = "No：" + invoice_no
-ws['E2'].alignment = Alignment(horizontal="right")
-ws['E3'] = "日付：" + date
-ws['E3'].alignment = Alignment(horizontal="right")
+ws['F2'] = "No："
+ws['F2'].alignment = Alignment(horizontal="right")
+ws['G2'] = invoice_no
+ws['G2'].alignment = Alignment(horizontal="right")
+ws['F3'] = "日付："
+ws['F3'].alignment = Alignment(horizontal="right")
+ws['G3'] = date
+ws['G3'].alignment = Alignment(horizontal="right")
 ws['B4'] =  company_name + " 御中"
-ws['B5'] = "〒" + postal_code
-ws['B6'] =  address
-ws['B7'] = "TES：" + phone
-ws['B8'] = "FAX：" + fax
-ws['B9'] = "担当者名：" + contact_person + " 様"
+ws['B5'] = "〒" + postal_code + " " + address
+ws['B6'] = "TES：" + phone + " " +  "FAX：" + fax
+ws['B7'] = "担当者名：" + contact_person + " 様"
 
 # 商品情報の挿入
-ws['B12'] = "商品名"
-ws['C12'] = "数量"
-ws['D12'] = "単価"
-ws['E12'] = "金額"
+ws['B10'] = "商品名"
+ws['C10'] = "数量"
+ws['D10'] = "単価"
+ws['E10'] = "金額"
 
 products = [
     {"name": "商品A", "quantity": 2, "unit_price": 10000},
     {"name": "商品B", "quantity": 1, "unit_price": 15000}
 ]
 
-row = 13
+row = 11
 subtotal = 0
 
 for product in products:
@@ -71,7 +73,7 @@ ws[f'B{row}'] = "税込合計"
 ws[f'E{row}'] = total
 
 # 列幅の調整
-column_widths = [6, 15, 10, 10, 15, 10, 6]
+column_widths = [6, 10, 10, 10, 10, 6, 15, 6]
 for i, width in enumerate(column_widths, start=1):
     ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = width
 
